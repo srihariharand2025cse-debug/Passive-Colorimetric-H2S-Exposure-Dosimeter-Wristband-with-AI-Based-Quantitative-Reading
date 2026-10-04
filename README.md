@@ -1,155 +1,191 @@
-# Passive Colorimetric H₂S Exposure-Dosimeter Wristband with AI-Based Quantitative Reading
+# Passive Colorimetric H₂S Exposure Dosimeter Wristband with AI-Based Quantitative Reading
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Flask REST API](https://img.shields.io/badge/Backend-Flask%203.0-green.svg)](https://flask.palletsprojects.org/)
 [![Scikit-Learn](https://img.shields.io/badge/AI%2FML-Scikit--Learn-orange.svg)](https://scikit-learn.org/)
 [![Bootstrap 5](https://img.shields.io/badge/Frontend-Bootstrap%205-purple.svg)](https://getbootstrap.com/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-lightgrey.svg)](https://www.sqlite.org/)
+[![Tests](https://img.shields.io/badge/Tests-15%20Passed-brightgreen.svg)]()
 
 ---
 
-## 📌 Executive Summary & Academic Context
+## 📌 1. Executive Summary & Problem Statement
 
-**Hydrogen Sulfide ($H_2S$)** is an extremely hazardous, colorless gas commonly encountered in wastewater treatment, oil and gas refining, chemical manufacturing, and mining operations. Due to severe olfactory fatigue occurring at high concentrations ($>100\text{ ppm}$), human senses cannot reliably gauge dangerous dosage over extended exposure durations.
+**Hydrogen Sulfide ($H_2S$)** is an extremely toxic, flammable, and corrosive gas produced during crude oil refining, wastewater treatment, mining operations, and biogas production. At low concentrations ($< 10\text{ ppm}$), it possesses a characteristic rotten-egg odor; however, at elevated concentrations ($> 50 - 100\text{ ppm}$), rapid **olfactory nerve paralysis** occurs within seconds, eliminating the human sense of smell and causing workers to mistakenly believe the danger has subsided.
 
-Traditional electronic gas detectors suffer from high power consumption, bulky form-factors, and frequent battery recharging. This project presents a complete **Passive Colorimetric $H_2S$ Exposure-Dosimeter Wristband** system integrated with an **AI-based quantitative optical reader and risk classification engine**. 
-
-The passive wearable wristband incorporates a colorimetric substrate film (e.g., silver nanoparticles or metal acetate complex) that chemically reacts with ambient $H_2S$ to form metal sulfides, causing a measurable shift from pale yellow/beige to dark brown/black. Combined with ambient environmental parameters (Temperature and Relative Humidity) and Exposure Duration, our **Random Forest AI pipeline** quantitatively predicts the exact $H_2S$ exposure concentration in **PPM** and assigns an occupational risk category in real-time.
-
----
-
-## 🔬 System Architecture & AI Pipeline
-
-```
-  +-------------------------------------------------------------+
-  |               PASSIVE COLORIMETRIC WRISTBAND               |
-  |  - RGB Sensing Substrate (Red, Green, Blue Film Intensity) |
-  |  - Environmental Sensors: Temperature (°C), Humidity (%)    |
-  |  - Cumulative Exposure Duration (Hours)                     |
-  +------------------------------+------------------------------+
-                                 |
-                                 v
-  +-------------------------------------------------------------+
-  |                     FLASK REST API BACKEND                  |
-  |  - Feature Extraction (Sensor Response Index, RGB Ratios)  |
-  +------------------------------+------------------------------+
-                                 |
-         +-----------------------+-----------------------+
-         |                                               |
-         v                                               v
-+-----------------------------------+   +----------------------------------+
-|      RANDOM FOREST REGRESSOR      |   |     RANDOM FOREST CLASSIFIER    |
-| Quantitative H2S Exposure (PPM)   |   | Health Risk Class Category       |
-| Target: Continuous Concentration |   | Target: Safe, Low, Mod, High...  |
-+-----------------+-----------------+   +----------------+-----------------+
-                  |                                      |
-                  +------------------+-------------------+
-                                     |
-                                     v
-  +-------------------------------------------------------------+
-  |              INTERACTIVE WEB DASHBOARD & DB                 |
-  |  - Real-time Optical Color Swatch & RGB Controls            |
-  |  - SQLite Telemetry Logging & Time Series Analytics        |
-  |  - Chart.js Visualizations & OSHA Compliance Warnings        |
-  +-------------------------------------------------------------+
-```
+### Limitations of Traditional Electronic Gas Detectors:
+- High battery power consumption necessitating frequent charging.
+- Heavy and cumbersome physical form-factors.
+- Regular sensor poisoning and sensor drift requiring frequent recalibration.
 
 ---
 
-## 📂 Project Directory Structure
+## 🎯 2. Project Objective & Proposed Solution
+
+This project implements an end-to-end academic IoT and AI/ML system simulating a **Passive Colorimetric $H_2S$ Exposure Dosimeter Wristband**. 
+
+The wearable wristband features a lightweight passive colorimetric sensing film (e.g., silver nanoparticles or metal acetate complex) that chemically darkens upon sulfidation ($2\text{Ag} + H_2S \rightarrow \text{Ag}_2S + H_2$). The optical colorimetric response (Red, Green, Blue channel intensity decay) combined with environmental sensor factors (**Temperature** and **Relative Humidity**) and cumulative **Exposure Time** is analyzed by a **Dual-Model Random Forest Machine Learning Engine** to:
+1. Quantitatively predict the exact continuous $H_2S$ concentration level in **PPM** (Regression).
+2. Classify the occupational health risk into discrete regulatory tiers: **Low**, **Moderate**, and **High** (Classification).
+
+---
+
+## 🔬 3. System Architecture & Data Flow
 
 ```
-.
-├── backend/
-│   ├── app.py              # Flask REST API server & web routing
-│   └── database.py         # SQLite database connector & telemetry queries
-├── dataset/
-│   └── h2s_exposure_data.csv # Chemistry-informed synthetic dataset (2,000 samples)
-├── database/
-│   ├── schema.sql          # SQLite table definitions & indexes
-│   └── h2s_dosimeter.db    # Auto-generated SQLite database
-├── ml/
-│   ├── generate_dataset.py # Chemical reaction kinetics dataset generator
-│   ├── train_models.py     # ML training & evaluation script (Regressor + Classifier)
-│   └── predict.py          # Real-time inference & feature engineering engine
-├── models/
-│   ├── rf_regressor.joblib # Trained Random Forest Regressor artifact
-│   ├── rf_classifier.joblib# Trained Random Forest Classifier artifact
-│   ├── scaler.joblib       # StandardScaler object
-│   ├── label_encoder.joblib# LabelEncoder object
-│   └── metrics.json        # Evaluation metrics (RMSE, MAE, R², Accuracy, F1)
-├── static/
-│   ├── css/
-│   │   └── style.css       # Responsive dark-theme dashboard CSS
-│   └── js/
-│       └── dashboard.js    # Interactive UI, Chart.js, & REST API integration
-├── templates/
-│   └── index.html          # Main single-page web dashboard application
-├── README.md               # Academic documentation & usage manual
-├── requirements.txt        # Python package dependencies
-└── run.py                  # Main execution entry point for VS Code
++-----------------------------------------------------------------------------------+
+|                        PASSIVE COLORIMETRIC WRISTBAND                             |
+|  - Optical RGB Sensing Film (Red, Green, Blue Intensity: 0-255)                  |
+|  - Environmental Sensors: Temperature (°C), Relative Humidity (%)                 |
+|  - Cumulative Exposure Duration (Hours)                                           |
++-----------------------------------------+-----------------------------------------+
+                                          |
+                                          v
++-----------------------------------------------------------------------------------+
+|                            FLASK REST API & ML ENGINE                             |
+|  - Input Validation & Optical Darkening Index (ΔE Calculation)                    |
+|  - Feature Normalization (StandardScaler)                                         |
++--------------------+------------------------------------+-------------------------+
+                     |                                    |
+                     v                                    v
++-----------------------------------------+   +-------------------------------------+
+|        RANDOM FOREST REGRESSOR          |   |      RANDOM FOREST CLASSIFIER       |
+| Quantitative H2S Exposure (PPM)         |   | Occupational Health Risk Level      |
+| Continuous Output (R² = 0.9430)         |   | Classes: Low, Moderate, High        |
++--------------------+--------------------+   +-------------------+-----------------+
+                     |                                            |
+                     +---------------------+----------------------+
+                                           |
+                                           v
++-----------------------------------------------------------------------------------+
+|                              SQLITE DATABASE LAYER                                |
+|  - users        : Plant worker profiles & safety roles                            |
+|  - devices      : Wristband fleet hardware registry & battery status              |
+|  - sensor_readings : Raw physical telemetry log                                   |
+|  - predictions  : Stored AI inferences & confidence scores                        |
++------------------------------------------+----------------------------------------+
+                                           |
+                                           v
++-----------------------------------------------------------------------------------+
+|                         RESPONSIVE FRONTEND DASHBOARD                             |
+|  - Dashboard Home (Real-time KPIs & Latest Sensor Reading Swatch)                 |
+|  - Sensor Data (4 Chart.js Visualizations & Live Stream Controller)               |
+|  - AI Prediction (Optical Substrate Simulator & Instant ML Inference)             |
+|  - Sensor History (Searchable/Sortable Table & CSV Export)                         |
+|  - Model Performance (MAE, RMSE, R², Accuracy, Precision, Confusion Matrix)       |
+|  - Connected Device Fleet Modal & Personnel Management                            |
++-----------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 📊 Dataset & Field Specifications
+## 🛠️ 4. Technology Stack
 
-The dataset models physical chemistry sulfidation kinetics where substrate darkening ($R, G, B$ decay) is a function of $H_2S$ exposure dosage and environmental acceleration factors ($T, RH$).
-
-| Field Name | Type | Description |
-| :--- | :--- | :--- |
-| `record_id` | Integer | Unique primary key ID |
-| `device_id` | Text | Smart wristband hardware ID (e.g. `WB-101`) |
-| `timestamp` | Datetime | Telemetry capture timestamp |
-| `red_value` | Integer (0-255) | Optical sensor Red channel intensity |
-| `green_value` | Integer (0-255) | Optical sensor Green channel intensity |
-| `blue_value` | Integer (0-255) | Optical sensor Blue channel intensity |
-| `temperature` | Float (°C) | Ambient temperature ($15.0^\circ\text{C}$ to $45.0^\circ\text{C}$) |
-| `humidity` | Float (%) | Relative Humidity ($20.0\%$ to $90.0\%$) |
-| `exposure_time` | Float (Hours) | Cumulative exposure duration ($0.5$ to $12.0\text{ hrs}$) |
-| `sensor_response` | Float (0.0 - 1.0) | Derived normalized color difference index ($\Delta E$) |
-| `exposure_level` | Float (PPM) | Continuous $H_2S$ concentration (Regression target) |
-| `risk_class` | Text | Occupational health risk category (Classification target) |
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Frontend** | HTML5, Vanilla CSS3 (Custom Dark Theme), JavaScript (ES6+ Fetch API), Bootstrap 5, Chart.js, FontAwesome 6 |
+| **Backend** | Python Flask 3.0, RESTful Architecture, WSGI |
+| **Database** | SQLite 3 with Relational Schema & B-Tree Indexes |
+| **AI / Machine Learning** | Python, Scikit-Learn, Pandas, NumPy, Joblib |
+| **Algorithms** | Random Forest Regressor & Random Forest Classifier |
+| **Testing** | Python `unittest` framework (15 Unit & Integration Tests) |
 
 ---
 
-## 🏷️ Risk Classification Thresholds
+## 📊 5. Dataset Description
 
-| Risk Class | Concentration Range | Color Indicator | Occupational Guidance |
+The dataset simulates physical chemistry sulfidation kinetics where substrate darkening is accelerated by ambient temperature and relative humidity:
+
+$$\text{Dose} = C_{H_2S} \times t^{0.85} \times k(T, RH)$$
+$$\text{Sensor Darkening Index } (\Delta E) = \frac{I_0 - (R + G + B)}{I_0}$$
+
+| Field Name | Data Type | Range / Format | Description |
 | :--- | :--- | :--- | :--- |
-| **Safe** | $0.0 - 5.0\text{ ppm}$ | 🟢 Green | Normal ambient levels. Safe for routine work. |
-| **Low Risk** | $5.1 - 20.0\text{ ppm}$ | 🟡 Yellow | Detectable odor threshold. Maintain ventilation. |
-| **Moderate Risk** | $20.1 - 50.0\text{ ppm}$ | 🟠 Orange | Eye & respiratory irritation threshold. Wear PPE. |
-| **High Risk** | $50.1 - 80.0\text{ ppm}$ | 🔴 Red | Severe olfactory fatigue. Evacuate & use SCBA. |
-| **Hazardous** | $> 80.0\text{ ppm}$ | 🟣 Purple | IDLH Threshold! Immediate emergency response required. |
+| `record_id` | Integer | Auto Increment | Primary key record identifier |
+| `device_id` | Text | `WB-101` to `WB-105` | Smart wristband hardware ID |
+| `timestamp` | Text | `YYYY-MM-DD HH:MM:SS` | Telemetry capture timestamp |
+| `red_value` | Integer | $0 - 255$ | Red channel intensity |
+| `green_value` | Integer | $0 - 255$ | Green channel intensity |
+| `blue_value` | Integer | $0 - 255$ | Blue channel intensity |
+| `temperature` | Float | $15.0 - 45.0^\circ\text{C}$ | Ambient temperature |
+| `humidity` | Float | $20.0 - 90.0\%$ | Relative humidity percentage |
+| `exposure_time` | Float | $0.5 - 12.0\text{ hrs}$ | Cumulative exposure duration |
+| `sensor_response` | Float | $0.0 - 1.0$ | Normalized color difference ($\Delta E$) |
+| `exposure_level` | Float | $0.0 - 100.0\text{ ppm}$ | Continuous $H_2S$ gas concentration |
+| `risk_class` | Text | `Low`, `Moderate`, `High` | Occupational risk classification |
 
 ---
 
-## 🚀 Step-by-Step Execution Guide (VS Code)
+## 🏷️ 6. Occupational Health Risk Thresholds
+
+| Risk Class | Concentration Range | Substrate Appearance | Occupational Guidance (OSHA / ACGIH) |
+| :--- | :--- | :--- | :--- |
+| **Low** | $0.0 - 19.9\text{ ppm}$ | 🟡 Pale Yellow / Beige | Normal ambient exposure. Safe within routine 8-hr TWA limit. |
+| **Moderate** | $20.0 - 49.9\text{ ppm}$ | 🟠 Brownish Orange | Exceeds OSHA 20 ppm ceiling. Eye/respiratory irritation. Wear PPE. |
+| **High** | $\ge 50.0\text{ ppm}$ | 🔴 Dark Brown / Black | Severe olfactory fatigue. Evacuate immediately & don SCBA. |
+
+---
+
+## 🗄️ 7. Database Design
+
+```sql
+users           : (user_id, username, full_name, email, role, created_at)
+devices         : (device_id, device_name, assigned_user_id, status, battery_level, location, last_sync)
+sensor_readings : (record_id, device_id, timestamp, red_value, green_value, blue_value, temperature, humidity, exposure_time, sensor_response, created_at)
+predictions     : (prediction_id, device_id, timestamp, red_value, green_value, blue_value, temperature, humidity, exposure_time, sensor_response, predicted_exposure_level, risk_class, confidence, status, created_at)
+```
+
+---
+
+## 🌐 8. REST API Endpoints
+
+| Method | Endpoint | Description | Sample Parameters / Body |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/dashboard` | Returns aggregated KPI metrics and time-series data | None |
+| `GET` | `/api/readings` | Returns stored raw wristband sensor readings | `?limit=50&offset=0&device_id=WB-101` |
+| `POST` | `/api/readings` | Saves incoming raw sensor telemetry reading | `{"device_id": "WB-101", "red_value": 180, ...}` |
+| `POST` | `/api/predict` | Executes ML inference, saves & returns prediction | `{"device_id": "WB-101", "red_value": 140, ...}` |
+| `POST` | `/api/generate-reading` | Simulates a live reading & executes ML inference | None |
+| `GET` | `/api/history` | Returns paginated prediction history | `?limit=20&offset=0&risk_class=Moderate` |
+| `GET` | `/api/model/metrics` | Returns ML evaluation benchmarks (R², RMSE, MAE, CM) | None |
+| `GET` | `/api/devices` | Returns connected wristband fleet & worker assignments | None |
+| `POST` | `/api/simulate/batch` | Injects a burst of 5 telemetry packets | `{"count": 5}` |
+| `GET` | `/api/export/csv` | Downloads full prediction history as CSV | None |
+
+---
+
+## 💻 9. Installation & Execution Guide
 
 ### Prerequisites
-- Python 3.10+ installed on your system.
-- VS Code or preferred Python terminal environment.
+- Python 3.10, 3.11, 3.12, or 3.13.
 
-### Step 1: Open Project in VS Code
-Open the project folder in VS Code:
+### Step 1: Clone or Open Project in VS Code
 ```bash
-code .
+cd "Passive Colorimetric H2S Exposure-Dosimeter Wristband with AI-Based Quantitative Reading"
 ```
 
 ### Step 2: Install Dependencies
-Run the following command in the VS Code terminal to install required Python packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 3: Run the Application
-Execute the main `run.py` script. This script automatically handles dataset generation, model training, database initialization, and web server startup in one step:
+### Step 3: Run Automated Test Suite
+```bash
+python tests/run_tests.py
+```
+*(Confirms that all 15 unit and integration tests pass)*.
+
+### Step 4: Launch Web Application
+You can launch using either command:
 ```bash
 python run.py
 ```
+*or*
+```bash
+python backend/app.py
+```
 
-### Step 4: Access Web Dashboard
+### Step 5: Access Web Dashboard
 Open your web browser and navigate to:
 ```
 http://127.0.0.1:5000
@@ -157,72 +193,40 @@ http://127.0.0.1:5000
 
 ---
 
-## 🌐 REST API Reference
+## 📈 10. Expected Output & Verified Model Performance
 
-### 1. Execute AI Exposure Prediction
-- **Endpoint:** `POST /api/predict`
-- **Request Body (JSON):**
-```json
-{
-  "red_value": 180,
-  "green_value": 160,
-  "blue_value": 110,
-  "temperature": 30.0,
-  "humidity": 65.0,
-  "exposure_time": 4.0,
-  "device_id": "WB-101",
-  "save_to_db": true
-}
 ```
-- **Response (200 OK):**
-```json
-{
-  "status": "success",
-  "data": {
-    "predicted_exposure_ppm": 24.85,
-    "risk_class": "Moderate Risk",
-    "sensor_response": 0.3333,
-    "class_probabilities": {
-      "Safe": 0.0,
-      "Low Risk": 0.08,
-      "Moderate Risk": 0.88,
-      "High Risk": 0.04,
-      "Hazardous": 0.0
-    },
-    "record_id": 101
-  }
-}
+======================================================================
+      H2S EXPOSURE DOSIMETER: AI/ML MODEL EVALUATION REPORT       
+======================================================================
+1. QUANTITATIVE EXPOSURE PREDICTION (RANDOM FOREST REGRESSION)
+   - Mean Absolute Error (MAE):      2.5888 ppm
+   - Root Mean Squared Error (RMSE): 4.6140 ppm
+   - Coefficient of Determination (R²): 0.9430
+
+2. OCCUPATIONAL RISK CLASSIFICATION (RANDOM FOREST CLASSIFIER)
+   - Overall Accuracy:               93.20 %
+   - Weighted Precision:             0.9334
+   - Weighted Recall:                0.9320
+   - Weighted F1-Score:              0.9296
+
+   Confusion Matrix:
+                      High        Low   Moderate
+   High                 17          0         13
+   Low                   0        272         10
+   Moderate              1         10        177
+======================================================================
 ```
-
-### 2. Fetch Telemetry History
-- **Endpoint:** `GET /api/readings?limit=20&offset=0&risk_class=Moderate%20Risk`
-
-### 3. Fetch Telemetry Analytics
-- **Endpoint:** `GET /api/analytics`
-
-### 4. Fetch AI Model Evaluation Metrics
-- **Endpoint:** `GET /api/model/metrics`
-
-### 5. Simulate Telemetry Packet Stream
-- **Endpoint:** `POST /api/simulate/batch` (Body: `{"count": 5}`)
-
-### 6. Export Dataset as CSV
-- **Endpoint:** `GET /api/export/csv`
 
 ---
 
-## 🎓 Academic Verification & Results
+## 🔮 11. Future Enhancements
 
-- **Random Forest Regressor:**
-  - $R^2 \ge 0.98$
-  - $\text{RMSE} < 1.0\text{ PPM}$
-- **Random Forest Classifier:**
-  - Accuracy: $> 98.0\%$
-  - Weighted F1-Score: $> 0.98$
+1. **LoRaWAN & BLE Mesh Wireless Gateway**: Integrating physical ESP32-C3 / nRF52 microcontrollers on the wristband for long-range wireless telemetry transmission.
+2. **Smartphone Optical Camera Spectrometry**: Utilizing smartphone camera computer vision (OpenCV) with color calibration reference cards to read sensing films without dedicated RGB sensors.
+3. **Edge TinyML Deployment**: Quantizing the Random Forest models with TensorFlow Lite Micro / MicroPython for real-time inference directly on wearable microcontrollers.
 
 ---
 
 ## 📄 License & Citation
-Developed as an academic AI/ML IoT project for passive chemical exposure dosimeter research. 
-
-*Simulated dataset utilized for development and local system validation.*
+Developed as an academic AI/ML project for passive chemical exposure dosimeter research.

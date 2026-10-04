@@ -438,6 +438,97 @@ def api_simulate_batch():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+@app.route('/api/generate-reading', methods=['POST'])
+def api_generate_single_reading():
+    """
+    6. Generate New Reading Feature:
+    Simulates a new incoming wristband reading, runs it through the ML pipeline,
+    stores the raw reading & prediction in SQLite, and returns the result.
+    """
+    try:
+        import random
+        device_ids = [f"WB-{100 + i}" for i in range(1, 6)]
+        dev = random.choice(device_ids)
+        scenario = random.choices(['low', 'moderate', 'high'], weights=[0.5, 0.35, 0.15])[0]
+
+        if scenario == 'low':
+            r = random.randint(215, 255)
+            g = random.randint(200, 245)
+            b = random.randint(155, 205)
+            temp = round(random.uniform(20.0, 30.0), 1)
+            hum = round(random.uniform(35.0, 60.0), 1)
+            exp_t = round(random.uniform(0.5, 3.5), 1)
+        elif scenario == 'moderate':
+            r = random.randint(130, 185)
+            g = random.randint(110, 165)
+            b = random.randint(80, 130)
+            temp = round(random.uniform(25.0, 38.0), 1)
+            hum = round(random.uniform(50.0, 75.0), 1)
+            exp_t = round(random.uniform(2.0, 6.0), 1)
+        else:
+            r = random.randint(30, 95)
+            g = random.randint(25, 85)
+            b = random.randint(20, 70)
+            temp = round(random.uniform(30.0, 42.0), 1)
+            hum = round(random.uniform(60.0, 85.0), 1)
+            exp_t = round(random.uniform(4.0, 10.0), 1)
+
+        pred_res = predict_exposure(r, g, b, temp, hum, exp_t)
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # 1. Store in raw sensor_readings
+        insert_sensor_reading({
+            'device_id': dev,
+            'timestamp': ts,
+            'red_value': r,
+            'green_value': g,
+            'blue_value': b,
+            'temperature': temp,
+            'humidity': hum,
+            'exposure_time': exp_t,
+            'sensor_response': pred_res['sensor_response']
+        })
+
+        # 2. Store in predictions
+        pred_id = insert_prediction({
+            'device_id': dev,
+            'timestamp': ts,
+            'red_value': r,
+            'green_value': g,
+            'blue_value': b,
+            'temperature': temp,
+            'humidity': hum,
+            'exposure_time': exp_t,
+            'sensor_response': pred_res['sensor_response'],
+            'predicted_exposure_level': pred_res['predicted_exposure_level'],
+            'risk_class': pred_res['risk_class'],
+            'confidence': pred_res['confidence'],
+            'status': 'success'
+        })
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Generated new live simulated wristband reading and executed AI inference.',
+            'prediction_id': pred_id,
+            'device_id': dev,
+            'timestamp': ts,
+            'red_value': r,
+            'green_value': g,
+            'blue_value': b,
+            'temperature': temp,
+            'humidity': hum,
+            'exposure_time': exp_t,
+            'sensor_response': pred_res['sensor_response'],
+            'predicted_exposure_level': pred_res['predicted_exposure_level'],
+            'risk_class': pred_res['risk_class'],
+            'confidence': pred_res['confidence'],
+            'class_probabilities': pred_res['class_probabilities'],
+            'risk_metadata': pred_res['risk_metadata']
+        }), 201
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 @app.route('/api/export/csv', methods=['GET'])
 def api_export_csv():
     """Export all stored predictions as a downloadable CSV file."""
@@ -452,6 +543,21 @@ def api_export_csv():
         )
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+# -------------------------------------------------------------------
+# Error Handlers
+# -------------------------------------------------------------------
+@app.errorhandler(400)
+def handle_bad_request(e):
+    return jsonify({'status': 'error', 'code': 400, 'message': 'Bad request. Please verify payload parameters.'}), 400
+
+@app.errorhandler(404)
+def handle_not_found(e):
+    return jsonify({'status': 'error', 'code': 404, 'message': 'API resource or endpoint not found.'}), 404
+
+@app.errorhandler(500)
+def handle_server_error(e):
+    return jsonify({'status': 'error', 'code': 500, 'message': 'Internal server error occurred.'}), 500
 
 if __name__ == '__main__':
     # Initialize DB & Model on server startup

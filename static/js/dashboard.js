@@ -347,32 +347,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Telemetry Simulation Controls
+    // 6. Generate New Reading Feature (Simulated Live Wristband Telemetry)
+    const btnGenReading = document.getElementById('btn-generate-single-reading');
+    if (btnGenReading) {
+        btnGenReading.addEventListener('click', async () => {
+            const originalHTML = btnGenReading.innerHTML;
+            btnGenReading.disabled = true;
+            btnGenReading.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Simulating...';
+            try {
+                const res = await fetch('/api/generate-reading', { method: 'POST' });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    await fetchDashboardData();
+                    if (document.getElementById('nav-history-tab').classList.contains('active')) {
+                        await fetchHistory();
+                    }
+                }
+            } catch (err) {
+                console.error('Error generating live reading:', err);
+            } finally {
+                btnGenReading.disabled = false;
+                btnGenReading.innerHTML = originalHTML;
+            }
+        });
+    }
+
+    // Telemetry Simulation Controls (Burst & Quick)
     document.getElementById('btn-stream-burst').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-stream-burst');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Simulating...';
         try {
             await fetch('/api/simulate/batch', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ count: 5 })
             });
-            fetchDashboardData();
-            fetchHistory();
+            await fetchDashboardData();
+            await fetchHistory();
         } catch (err) {
             console.error('Error in burst simulation:', err);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-bolt me-1"></i>Simulate 5 Packets';
         }
     });
 
     document.getElementById('dash-btn-simulate-quick').addEventListener('click', async () => {
+        const btn = document.getElementById('dash-btn-simulate-quick');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Simulating...';
         try {
             await fetch('/api/simulate/batch', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ count: 5 })
             });
-            fetchDashboardData();
-            fetchHistory();
+            await fetchDashboardData();
+            await fetchHistory();
         } catch (err) {
             console.error('Error in quick simulation:', err);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-bolt me-1"></i>Simulate 5 Telemetry Packets';
         }
     });
 
@@ -413,6 +450,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. AI PREDICTION: Dynamic Inference Form
     // -------------------------------------------------------------
     async function submitPrediction() {
+        const btnPredict = document.getElementById('btn-submit-predict');
+        const originalBtnText = btnPredict ? btnPredict.innerHTML : '';
+        if (btnPredict) {
+            btnPredict.disabled = true;
+            btnPredict.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Evaluating AI Models...';
+        }
+
         const payload = {
             device_id: predDevice.value,
             red_value: parseInt(sliderR.value),
@@ -436,6 +480,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Error submitting prediction:', err);
+        } finally {
+            if (btnPredict) {
+                btnPredict.disabled = false;
+                btnPredict.innerHTML = originalBtnText;
+            }
         }
     }
 
