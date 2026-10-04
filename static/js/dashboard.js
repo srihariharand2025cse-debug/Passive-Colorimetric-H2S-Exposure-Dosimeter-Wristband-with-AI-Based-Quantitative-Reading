@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
     async function fetchHistory() {
         const riskFilter = document.getElementById('filter-risk').value;
-        const url = `/api/readings?limit=${historyLimit}&offset=${historyPage * historyLimit}${riskFilter ? `&risk_class=${encodeURIComponent(riskFilter)}` : ''}`;
+        const url = `/api/history?limit=${historyLimit}&offset=${historyPage * historyLimit}${riskFilter ? `&risk_class=${encodeURIComponent(riskFilter)}` : ''}`;
 
         try {
             const res = await fetch(url);
@@ -412,11 +412,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         readings.forEach(r => {
             const tr = document.createElement('tr');
-            const darkPct = (r.sensor_response * 100).toFixed(1);
+            const darkPct = ((r.sensor_response || 0) * 100).toFixed(1);
             const badgeClass = getBadgeClass(r.risk_class);
+            const recordId = r.prediction_id || r.record_id;
+            const expLevel = (r.predicted_exposure_level !== undefined ? r.predicted_exposure_level : r.exposure_level || 0).toFixed(2);
 
             tr.innerHTML = `
-                <td>#${r.record_id}</td>
+                <td>#${recordId}</td>
                 <td><span class="badge bg-secondary">${r.device_id}</span></td>
                 <td>${r.timestamp}</td>
                 <td>
@@ -427,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${r.humidity} %</td>
                 <td>${r.exposure_time} h</td>
                 <td>${darkPct} %</td>
-                <td class="fw-bold text-info">${r.exposure_level.toFixed(2)} ppm</td>
+                <td class="fw-bold text-info">${expLevel} ppm</td>
                 <td><span class="${badgeClass}">${r.risk_class}</span></td>
             `;
             tbody.appendChild(tr);
