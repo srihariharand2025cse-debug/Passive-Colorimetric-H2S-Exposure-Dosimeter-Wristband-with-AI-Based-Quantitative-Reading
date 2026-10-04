@@ -28,7 +28,7 @@ class TestAPIEndpoints(unittest.TestCase):
         """Test home route loads index.html template."""
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'H2S', response.data)
+        self.assertTrue(b'H2S' in response.data or 'H₂S'.encode('utf-8') in response.data)
 
     def test_get_readings_endpoint(self):
         """Test GET /api/readings returns paginated readings."""

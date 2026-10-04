@@ -285,16 +285,25 @@ def get_dashboard_stats():
     moderate_risk_count = risk_counts['moderate_count'] or 0
     high_risk_count = risk_counts['high_count'] or 0
 
+    # Connected devices count
+    cursor.execute("SELECT COUNT(*) as dev_count FROM devices WHERE status = 'Active'")
+    dev_count_row = cursor.fetchone()
+    connected_device_count = dev_count_row['dev_count'] if dev_count_row else 5
+
     # Latest reading
     cursor.execute("SELECT * FROM predictions ORDER BY prediction_id DESC LIMIT 1")
     latest_row = cursor.fetchone()
     latest_reading = dict(latest_row) if latest_row else None
 
-    # Time series (latest 25 entries in chronological order)
+    # Time series (latest 30 entries in chronological order with RGB, Temp, Humidity)
     cursor.execute("""
-        SELECT prediction_id, timestamp, device_id, predicted_exposure_level as exposure_level, risk_class, sensor_response
+        SELECT prediction_id, timestamp, device_id, 
+               red_value, green_value, blue_value, 
+               temperature, humidity, exposure_time,
+               predicted_exposure_level as exposure_level, 
+               risk_class, sensor_response
         FROM predictions
-        ORDER BY prediction_id DESC LIMIT 25
+        ORDER BY prediction_id DESC LIMIT 30
     """)
     recent_series = [dict(row) for row in cursor.fetchall()][::-1]
 
@@ -308,10 +317,15 @@ def get_dashboard_stats():
 
     conn.close()
 
+    # Determine current overall risk status based on latest reading or average
+    current_risk_status = latest_reading['risk_class'] if latest_reading else 'Low'
+
     return {
         'total_readings': total_readings,
         'average_exposure': avg_exposure,
         'highest_exposure': max_exposure,
+        'current_risk_status': current_risk_status,
+        'connected_device_count': connected_device_count,
         'low_risk_count': low_risk_count,
         'moderate_risk_count': moderate_risk_count,
         'high_risk_count': high_risk_count,
