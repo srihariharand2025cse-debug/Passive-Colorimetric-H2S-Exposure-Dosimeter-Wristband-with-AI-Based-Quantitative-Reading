@@ -1,0 +1,224 @@
+/* Modern Aesthetic Styling for H2S Dosimeter Wristband Dashboard */
+:root {
+    --primary-color: #0f172a;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-indigo: #6366f1;
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-light: #ffffff;
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    
+    /* Risk Class Colors */
+    --safe-color: #10b981;
+    --low-color: #f59e0b;
+    --moderate-color: #f97316;
+    --high-color: #ef4444;
+    --hazardous-color: #a855f7;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0b0f19;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-tabs .nav-link {
+    color: #94a3b8;
+    border: none;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #38bdf8;
+    border: none;
+}
+
+.nav-tabs .nav-link.active {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border-bottom: 3px solid #38bdf8;
+}
+
+/* Cards */
+.card-custom {
+    background-color: #161e2e;
+    border: 1px solid #243044;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-custom:hover {
+    border-color: #334155;
+}
+
+.card-header-custom {
+    background-color: rgba(30, 41, 59, 0.6);
+    border-bottom: 1px solid #243044;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #f1f5f9;
+}
+
+/* Color Preview Chip */
+.color-swatch-box {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    border: 3px solid #334155;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    transition: background-color 0.3s ease;
+}
+
+/* Metric Cards */
+.stat-card {
+    padding: 1.25rem;
+    border-radius: 10px;
+    background: #1e293b;
+    border-left: 4px solid #38bdf8;
+}
+
+.stat-card.safe { border-left-color: var(--safe-color); }
+.stat-card.low { border-left-color: var(--low-color); }
+.stat-card.moderate { border-left-color: var(--moderate-color); }
+.stat-card.high { border-left-color: var(--high-color); }
+.stat-card.hazardous { border-left-color: var(--hazardous-color); }
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Custom Badges */
+.badge-safe {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid #10b981;
+    padding: 0.4em 0.8em;
+    font-size: 0.85rem;
+    border-radius: 20px;
+}
+
+.badge-low {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid #f59e0b;
+    padding: 0.4em 0.8em;
+    font-size: 0.85rem;
+    border-radius: 20px;
+}
+
+.badge-moderate {
+    background-color: rgba(249, 115, 22, 0.2);
+    color: #fb923c;
+    border: 1px solid #f97316;
+    padding: 0.4em 0.8em;
+    font-size: 0.85rem;
+    border-radius: 20px;
+}
+
+.badge-high {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid #ef4444;
+    padding: 0.4em 0.8em;
+    font-size: 0.85rem;
+    border-radius: 20px;
+}
+
+.badge-hazardous {
+    background-color: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    border: 1px solid #a855f7;
+    padding: 0.4em 0.8em;
+    font-size: 0.85rem;
+    border-radius: 20px;
+}
+
+/* Sliders */
+.form-range::-webkit-slider-thumb {
+    background: #38bdf8;
+}
+
+/* Table styling */
+.table-dark-custom {
+    background-color: #161e2e;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}
+
+.table-dark-custom th {
+    background-color: #1e293b;
+    color: #94a3b8;
+    border-bottom: 2px solid #334155;
+}
+
+.table-dark-custom td {
+    border-bottom: 1px solid #243044;
+    vertical-align: middle;
+}
+
+/* Confusion Matrix Grid */
+.cm-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin-top: 1rem;
+}
+
+.cm-cell {
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.cm-header {
+    background: #0f172a;
+    color: #38bdf8;
+    font-size: 0.75rem;
+}
+
+/* Dynamic Glowing Effects for Danger */
+.glow-danger {
+    animation: pulse-danger 1.5s infinite;
+}
+
+@keyframes pulse-danger {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}

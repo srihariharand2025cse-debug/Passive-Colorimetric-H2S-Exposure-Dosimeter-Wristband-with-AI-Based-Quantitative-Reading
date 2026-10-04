@@ -1,0 +1,86 @@
+{
+    "regression": {
+        "rmse": 5.6418,
+        "mae": 3.7545,
+        "r2_score": 0.9526,
+        "feature_importances": {
+            "red_value": 0.0781,
+            "green_value": 0.1783,
+            "blue_value": 0.0587,
+            "temperature": 0.0245,
+            "humidity": 0.0399,
+            "exposure_time": 0.211,
+            "sensor_response": 0.1877,
+            "r_ratio": 0.0044,
+            "g_ratio": 0.0039,
+            "b_ratio": 0.0053,
+            "luminance": 0.2084
+        }
+    },
+    "classification": {
+        "accuracy": 0.8275,
+        "precision": 0.8216,
+        "recall": 0.8275,
+        "f1_score": 0.8233,
+        "confusion_matrix": [
+            [
+                20,
+                13,
+                0,
+                1,
+                0
+            ],
+            [
+                11,
+                31,
+                0,
+                13,
+                0
+            ],
+            [
+                0,
+                0,
+                116,
+                7,
+                4
+            ],
+            [
+                0,
+                2,
+                12,
+                134,
+                0
+            ],
+            [
+                0,
+                0,
+                6,
+                0,
+                30
+            ]
+        ],
+        "classes": [
+            "Hazardous",
+            "High Risk",
+            "Low Risk",
+            "Moderate Risk",
+            "Safe"
+        ],
+        "feature_importances": {
+            "red_value": 0.0961,
+            "green_value": 0.077,
+            "blue_value": 0.0831,
+            "temperature": 0.0615,
+            "humidity": 0.0767,
+            "exposure_time": 0.2443,
+            "sensor_response": 0.125,
+            "r_ratio": 0.043,
+            "g_ratio": 0.0382,
+            "b_ratio": 0.0374,
+            "luminance": 0.1177
+        }
+    },
+    "total_samples": 2000,
+    "train_samples": 1600,
+    "test_samples": 400
+}

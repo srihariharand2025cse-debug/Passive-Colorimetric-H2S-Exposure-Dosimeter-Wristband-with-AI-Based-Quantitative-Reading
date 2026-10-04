@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2S Dosimeter Wristband - AI Exposure System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fa-solid fa-vest-patches text-info me-2 fs-3"></i>
+                <div>
+                    <div class="lh-1 fw-bold fs-5">H₂S COLORIMETRIC DOSIMETER</div>
+                    <small class="text-muted fs-7">AI-Based Quantitative Exposure Wristband System</small>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-menu nav nav-tabs ms-auto border-0" id="mainTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="predictor-tab" data-bs-toggle="tab" data-bs-target="#predictor" type="button" role="tab">
+                            <i class="fa-solid fa-microchip me-1"></i> Live Predictor & Wristband
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                            <i class="fa-solid fa-chart-line me-1"></i> Telemetry Analytics
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                            <i class="fa-solid fa-database me-1"></i> Exposure Logs
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="model-tab" data-bs-toggle="tab" data-bs-target="#model" type="button" role="tab">
+                            <i class="fa-solid fa-brain me-1"></i> AI Model Metrics
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid px-4 py-4">
+
+        <div class="tab-content" id="mainTabContent">
+
+            <!-- ======================================================= -->
+            <!-- TAB 1: LIVE PREDICTOR & WRISTBAND SIMULATOR -->
+            <!-- ======================================================= -->
+            <div class="tab-pane fade show active" id="predictor" role="tabpanel">
+                <div class="row g-4">
+                    
+                    <!-- Left Column: Interactive Form & Optical Substrate -->
+                    <div class="col-lg-6">
+                        <div class="card card-custom">
+                            <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                                <span><i class="fa-solid fa-sliders text-info me-2"></i>Optical & Environmental Sensor Inputs</span>
+                                <span class="badge bg-secondary">Wristband Telemetry</span>
+                            </div>
+                            <div class="card-body">
+                                
+                                <!-- Color Swatch Box -->
+                                <div class="mb-4">
+                                    <label class="form-label d-flex justify-content-between text-light fw-semibold">
+                                        <span>Colorimetric Sensing Film Substrate State</span>
+                                        <span id="response-index-badge" class="badge bg-info">Sensor Darkening: 0.0%</span>
+                                    </label>
+                                    <div id="color-swatch" class="color-swatch-box" style="background-color: rgb(240, 235, 200);">
+                                        <span id="color-hex-text" class="text-dark bg-white px-2 py-1 rounded opacity-75">RGB(240, 235, 200)</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Simulates film darkening due to H₂S sulfidation (Ag₂S/PbS reaction).</small>
+                                </div>
+
+                                <!-- Preset Scenarios -->
+                                <div class="mb-4">
+                                    <label class="form-label text-light fw-semibold fs-7 uppercase">Quick Color Presets:</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button class="btn btn-sm btn-outline-success preset-btn" data-r="245" data-g="240" data-b="200" data-t="25" data-h="45" data-e="1.0">
+                                            Fresh Substrate (Safe)
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning preset-btn" data-r="190" data-g="175" data-b="130" data-t="28" data-h="55" data-e="3.0">
+                                            Slight Yellowing (Low Risk)
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-orange preset-btn" style="color: #fd7e14; border-color: #fd7e14;" data-r="140" data-g="120" data-b="80" data-t="32" data-h="65" data-e="5.0">
+                                            Brownish Shift (Moderate)
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger preset-btn" data-r="60" data-g="50" data-b="35" data-t="36" data-h="75" data-e="8.0">
+                                            Dark Sulfide Saturation (High/Hazard)
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <form id="prediction-form">
+                                    <div class="row g-3">
+                                        
+                                        <!-- Device ID -->
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted fs-7">Device ID</label>
+                                            <select id="input-device" class="form-select bg-dark text-light border-secondary">
+                                                <option value="WB-101">WB-101 (Worker Alpha)</option>
+                                                <option value="WB-102">WB-102 (Worker Beta)</option>
+                                                <option value="WB-103">WB-103 (Worker Gamma)</option>
+                                                <option value="WB-104">WB-104 (Site Refractory)</option>
+                                                <option value="WB-105">WB-105 (Sewer Crew)</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Exposure Time -->
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted fs-7">Exposure Time (Hours): <span id="val-time" class="text-info fw-bold">2.0</span> hrs</label>
+                                            <input type="range" class="form-range" id="input-time" min="0.5" max="12.0" step="0.5" value="2.0">
+                                        </div>
+
+                                        <!-- Red Channel -->
+                                        <div class="col-md-4">
+                                            <label class="form-label text-muted fs-7">Red Value (0-255): <span id="val-r" class="text-danger fw-bold">240</span></label>
+                                            <input type="range" class="form-range" id="input-r" min="0" max="255" value="240">
+                                        </div>
+
+                                        <!-- Green Channel -->
+                                        <div class="col-md-4">
+                                            <label class="form-label text-muted fs-7">Green Value (0-255): <span id="val-g" class="text-success fw-bold">235</span></label>
+                                            <input type="range" class="form-range" id="input-g" min="0" max="255" value="235">
+                                        </div>
+
+                                        <!-- Blue Channel -->
+                                        <div class="col-md-4">
+                                            <label class="form-label text-muted fs-7">Blue Value (0-255): <span id="val-b" class="text-primary fw-bold">200</span></label>
+                                            <input type="range" class="form-range" id="input-b" min="0" max="255" value="200">
+                                        </div>
+
+                                        <!-- Temperature -->
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted fs-7">Ambient Temperature: <span id="val-temp" class="text-warning fw-bold">25.0</span> °C</label>
+                                            <input type="range" class="form-range" id="input-temp" min="15.0" max="45.0" step="0.5" value="25.0">
+                                        </div>
+
+                                        <!-- Humidity -->
+                                        <div class="col-md-6">
+                                            <label class="form-label text-muted fs-7">Relative Humidity: <span id="val-hum" class="text-info fw-bold">50.0</span> %</label>
+                                            <input type="range" class="form-range" id="input-hum" min="20.0" max="90.0" step="1.0" value="50.0">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid mt-4">
+                                        <button type="submit" class="btn btn-info btn-lg text-dark fw-bold">
+                                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Calculate AI Exposure & Risk
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <!-- Live Telemetry Simulation Control -->
+                        <div class="card card-custom mt-4">
+                            <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                                <span><i class="fa-solid fa-tower-broadcast text-warning me-2"></i>Wristband Fleet Telemetry Stream</span>
+                                <span class="badge bg-warning text-dark">Simulator</span>
+                            </div>
+                            <div class="card-body d-flex gap-3 align-items-center flex-wrap">
+                                <button id="btn-simulate-burst" class="btn btn-outline-warning">
+                                    <i class="fa-solid fa-bolt me-1"></i>Simulate 5 Telemetry Packets
+                                </button>
+                                <button id="btn-toggle-auto" class="btn btn-outline-info">
+                                    <i class="fa-solid fa-play me-1"></i>Start Auto Stream (3s)
+                                </button>
+                                <span id="sim-status-text" class="text-muted fs-7">Idle</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: AI Quantitative Output -->
+                    <div class="col-lg-6">
+                        <div id="result-card" class="card card-custom h-100">
+                            <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                                <span><i class="fa-solid fa-shield-virus text-success me-2"></i>Quantitative Exposure Prediction</span>
+                                <span id="result-risk-badge" class="badge-safe">SAFE</span>
+                            </div>
+                            <div class="card-body">
+                                
+                                <!-- Stat Highlights -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="stat-card safe" id="exp-stat-card">
+                                            <div class="stat-label">Predicted H₂S Exposure</div>
+                                            <div class="stat-value"><span id="res-ppm">1.25</span> <small class="fs-6 text-muted">ppm</small></div>
+                                            <small class="text-muted d-block mt-1">Random Forest Regressor</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="stat-card safe" id="risk-stat-card">
+                                            <div class="stat-label">Health Risk Status</div>
+                                            <div class="stat-value fs-3" id="res-risk-text">Safe</div>
+                                            <small class="text-muted d-block mt-1">Random Forest Classifier</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Advisory -->
+                                <div class="alert alert-dark border-secondary mb-4" id="alert-advisory">
+                                    <div class="fw-bold mb-1 text-info"><i class="fa-solid fa-circle-info me-2"></i>Safety Guidance & Compliance:</div>
+                                    <div id="res-action-text" class="fs-7 text-light">Normal ambient levels. Exposure is well within safe occupational thresholds.</div>
+                                </div>
+
+                                <!-- Class Probabilities Chart -->
+                                <div class="mb-3">
+                                    <h6 class="text-muted fs-7 uppercase mb-2">Risk Class Probability Confidence:</h6>
+                                    <div style="height: 180px;">
+                                        <canvas id="probChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Input Summary Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-dark-custom mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Sensor Input</th>
+                                                <th>Derived Index</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Substrate RGB</td>
+                                                <td id="table-rgb">240, 235, 200</td>
+                                                <td id="table-darkening">0.00 %</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Temp / Humidity</td>
+                                                <td id="table-env">25.0 °C / 50.0 %</td>
+                                                <td>Kinetic Factor</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Exposure Duration</td>
+                                                <td id="table-time">2.0 hrs</td>
+                                                <td>Cumulative Dose</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ======================================================= -->
+            <!-- TAB 2: TELEMETRY ANALYTICS DASHBOARD -->
+            <!-- ======================================================= -->
+            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                
+                <!-- KPI Stat Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Telemetry Records</div>
+                            <div class="stat-value" id="kpi-total">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card low">
+                            <div class="stat-label">Average Exposure (PPM)</div>
+                            <div class="stat-value" id="kpi-avg">0.0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card high">
+                            <div class="stat-label">Peak Exposure Recorded</div>
+                            <div class="stat-value" id="kpi-max">0.0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card safe">
+                            <div class="stat-label">Active Wristband Devices</div>
+                            <div class="stat-value" id="kpi-devices">5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card card-custom">
+                            <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                                <span><i class="fa-solid fa-chart-line text-info me-2"></i>H₂S Exposure Trend Over Time</span>
+                                <button class="btn btn-sm btn-outline-secondary" id="refresh-analytics"><i class="fa-solid fa-rotate me-1"></i>Refresh</button>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 320px;">
+                                    <canvas id="trendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card card-custom">
+                            <div class="card-header card-header-custom">
+                                <i class="fa-solid fa-chart-pie text-warning me-2"></i>Risk Class Distribution
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 320px;">
+                                    <canvas id="riskPieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card card-custom">
+                            <div class="card-header card-header-custom">
+                                <i class="fa-solid fa-vial text-success me-2"></i>Sensor Response Index vs Predicted H₂S (PPM)
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 280px;">
+                                    <canvas id="scatterChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card card-custom">
+                            <div class="card-header card-header-custom">
+                                <i class="fa-solid fa-users-gear text-primary me-2"></i>Average Exposure Level per Wristband
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 280px;">
+                                    <canvas id="deviceBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ======================================================= -->
+            <!-- TAB 3: EXPOSURE HISTORY LOGS -->
+            <!-- ======================================================= -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="card card-custom">
+                    <div class="card-header card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <i class="fa-solid fa-database text-info me-2"></i>Historical Sensor Telemetry Database
+                        </div>
+                        <div class="d-flex gap-2">
+                            <select id="filter-risk" class="form-select form-select-sm bg-dark text-light border-secondary">
+                                <option value="">All Risk Classes</option>
+                                <option value="Safe">Safe</option>
+                                <option value="Low Risk">Low Risk</option>
+                                <option value="Moderate Risk">Moderate Risk</option>
+                                <option value="High Risk">High Risk</option>
+                                <option value="Hazardous">Hazardous</option>
+                            </select>
+                            <a href="/api/export/csv" class="btn btn-sm btn-outline-success">
+                                <i class="fa-solid fa-file-csv me-1"></i>Export CSV
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark-custom align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Device</th>
+                                        <th>Timestamp</th>
+                                        <th>Film Color</th>
+                                        <th>RGB</th>
+                                        <th>Temp (°C)</th>
+                                        <th>Humidity</th>
+                                        <th>Time (h)</th>
+                                        <th>Darkening %</th>
+                                        <th>Predicted H₂S</th>
+                                        <th>Risk Class</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <tr>
+                                        <td colspan="11" class="text-center py-4 text-muted">Loading telemetry logs...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-dark border-secondary d-flex justify-content-between align-items-center">
+                        <span id="table-info" class="fs-7 text-muted">Showing records</span>
+                        <div class="btn-group btn-group-sm">
+                            <button id="btn-prev-page" class="btn btn-outline-secondary" disabled>Previous</button>
+                            <button id="btn-next-page" class="btn btn-outline-secondary">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================= -->
+            <!-- TAB 4: AI MODEL PERFORMANCE & EVALUATION -->
+            <!-- ======================================================= -->
+            <div class="tab-pane fade" id="model" role="tabpanel">
+                <div class="row g-4">
+                    
+                    <!-- Regressor Metrics -->
+                    <div class="col-md-6">
+                        <div class="card card-custom h-100">
+                            <div class="card-header card-header-custom">
+                                <i class="fa-solid fa-chart-area text-info me-2"></i>Random Forest Regressor (Quantitative Exposure)
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 text-center mb-4">
+                                    <div class="col-4">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">R² Score</div>
+                                            <div class="fs-4 fw-bold text-info" id="m-r2">0.99</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">RMSE</div>
+                                            <div class="fs-4 fw-bold text-success" id="m-rmse">0.85</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">MAE</div>
+                                            <div class="fs-4 fw-bold text-warning" id="m-mae">0.42</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted fs-7 uppercase mb-2">Regressor Feature Importances:</h6>
+                                <div style="height: 220px;">
+                                    <canvas id="regImportChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classifier Metrics -->
+                    <div class="col-md-6">
+                        <div class="card card-custom h-100">
+                            <div class="card-header card-header-custom">
+                                <i class="fa-solid fa-list-check text-warning me-2"></i>Random Forest Classifier (Risk Categories)
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3 text-center mb-4">
+                                    <div class="col-3">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">Accuracy</div>
+                                            <div class="fs-5 fw-bold text-success" id="m-acc">98.5%</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">Precision</div>
+                                            <div class="fs-5 fw-bold text-info" id="m-prec">0.98</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">Recall</div>
+                                            <div class="fs-5 fw-bold text-warning" id="m-rec">0.98</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="p-2 border border-secondary rounded">
+                                            <div class="text-muted fs-7">F1 Score</div>
+                                            <div class="fs-5 fw-bold text-primary" id="m-f1">0.98</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted fs-7 uppercase mb-2">Classifier Confusion Matrix:</h6>
+                                <div id="cm-container" class="table-responsive">
+                                    <div class="text-muted fs-7">Loading matrix...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
