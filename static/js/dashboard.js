@@ -153,11 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getStatCardClass(risk) {
         switch (risk) {
-            case 'Safe': return 'safe';
-            case 'Low Risk': return 'low';
+            case 'Low':
+            case 'Safe':
+            case 'Low Risk': return 'safe';
+            case 'Moderate':
             case 'Moderate Risk': return 'moderate';
-            case 'High Risk': return 'high';
-            case 'Hazardous': return 'hazardous';
+            case 'High':
+            case 'High Risk':
+            case 'Hazardous': return 'high';
             default: return 'safe';
         }
     }
@@ -302,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Risk Pie Chart
         const riskDist = analytics.risk_distribution;
-        const riskLabels = ['Safe', 'Low Risk', 'Moderate Risk', 'High Risk', 'Hazardous'];
+        const riskLabels = Object.keys(riskDist).length > 0 ? Object.keys(riskDist) : ['Low', 'Moderate', 'High'];
         const riskCounts = riskLabels.map(r => riskDist[r] || 0);
 
         const ctxPie = document.getElementById('riskPieChart').getContext('2d');
@@ -313,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 labels: riskLabels,
                 datasets: [{
                     data: riskCounts,
-                    backgroundColor: ['#10b981', '#f59e0b', '#f97316', '#ef4444', '#a855f7'],
+                    backgroundColor: ['#10b981', '#f97316', '#ef4444', '#f59e0b', '#a855f7'],
                     borderWidth: 2,
                     borderColor: '#161e2e'
                 }]
@@ -441,11 +444,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getBadgeClass(risk) {
         switch (risk) {
-            case 'Safe': return 'badge-safe';
-            case 'Low Risk': return 'badge-low';
+            case 'Low':
+            case 'Safe':
+            case 'Low Risk': return 'badge-safe';
+            case 'Moderate':
             case 'Moderate Risk': return 'badge-moderate';
-            case 'High Risk': return 'badge-high';
-            case 'Hazardous': return 'badge-hazardous';
+            case 'High':
+            case 'High Risk':
+            case 'Hazardous': return 'badge-high';
             default: return 'badge-safe';
         }
     }

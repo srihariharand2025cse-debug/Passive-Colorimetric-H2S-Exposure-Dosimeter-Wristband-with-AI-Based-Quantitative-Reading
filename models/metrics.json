@@ -1,86 +1,67 @@
 {
     "regression": {
-        "rmse": 5.6418,
-        "mae": 3.7545,
-        "r2_score": 0.9526,
+        "mae": 2.5888,
+        "rmse": 4.614,
+        "r2_score": 0.943,
         "feature_importances": {
-            "red_value": 0.0781,
-            "green_value": 0.1783,
-            "blue_value": 0.0587,
-            "temperature": 0.0245,
-            "humidity": 0.0399,
-            "exposure_time": 0.211,
-            "sensor_response": 0.1877,
-            "r_ratio": 0.0044,
-            "g_ratio": 0.0039,
-            "b_ratio": 0.0053,
-            "luminance": 0.2084
+            "red_value": 0.0582,
+            "green_value": 0.2281,
+            "blue_value": 0.0379,
+            "temperature": 0.0315,
+            "humidity": 0.0401,
+            "exposure_time": 0.2276,
+            "sensor_response": 0.3767
         }
     },
     "classification": {
-        "accuracy": 0.8275,
-        "precision": 0.8216,
-        "recall": 0.8275,
-        "f1_score": 0.8233,
+        "accuracy": 0.932,
+        "precision": 0.9334,
+        "recall": 0.932,
+        "f1_score": 0.9296,
         "confusion_matrix": [
             [
-                20,
-                13,
+                17,
                 0,
+                13
+            ],
+            [
+                0,
+                272,
+                10
+            ],
+            [
                 1,
-                0
-            ],
-            [
-                11,
-                31,
-                0,
-                13,
-                0
-            ],
-            [
-                0,
-                0,
-                116,
-                7,
-                4
-            ],
-            [
-                0,
-                2,
-                12,
-                134,
-                0
-            ],
-            [
-                0,
-                0,
-                6,
-                0,
-                30
+                10,
+                177
             ]
         ],
         "classes": [
-            "Hazardous",
-            "High Risk",
-            "Low Risk",
-            "Moderate Risk",
-            "Safe"
+            "High",
+            "Low",
+            "Moderate"
         ],
         "feature_importances": {
-            "red_value": 0.0961,
-            "green_value": 0.077,
-            "blue_value": 0.0831,
-            "temperature": 0.0615,
-            "humidity": 0.0767,
-            "exposure_time": 0.2443,
-            "sensor_response": 0.125,
-            "r_ratio": 0.043,
-            "g_ratio": 0.0382,
-            "b_ratio": 0.0374,
-            "luminance": 0.1177
+            "red_value": 0.1789,
+            "green_value": 0.158,
+            "blue_value": 0.1069,
+            "temperature": 0.0622,
+            "humidity": 0.0677,
+            "exposure_time": 0.2492,
+            "sensor_response": 0.1772
         }
     },
-    "total_samples": 2000,
-    "train_samples": 1600,
-    "test_samples": 400
+    "dataset_summary": {
+        "total_samples": 2500,
+        "train_samples": 2000,
+        "test_samples": 500,
+        "features": [
+            "red_value",
+            "green_value",
+            "blue_value",
+            "temperature",
+            "humidity",
+            "exposure_time",
+            "sensor_response"
+        ]
+    }
 }

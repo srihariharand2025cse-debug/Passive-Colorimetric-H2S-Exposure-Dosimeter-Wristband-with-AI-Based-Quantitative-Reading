@@ -17,7 +17,7 @@ if ROOT_DIR not in sys.path:
 
 from backend.database import init_db, insert_reading, get_readings, get_total_count, get_analytics_summary
 from ml.predict import H2SDosimeterPredictor
-from ml.generate_dataset import generate_h2s_dataset
+from ml.generate_dataset import generate_sensor_data, generate_h2s_dataset
 
 app = Flask(
     __name__,
@@ -43,9 +43,9 @@ def setup_app():
         init_db()
         # Seed initial data from synthetic generator
         print("[SERVER] Seeding initial database telemetry records...")
-        csv_file = os.path.join(ROOT_DIR, 'dataset', 'h2s_exposure_data.csv')
+        csv_file = os.path.join(ROOT_DIR, 'dataset', 'sensor_data.csv')
         if not os.path.exists(csv_file):
-            generate_h2s_dataset()
+            generate_sensor_data()
             
         df = pd.read_csv(csv_file).head(100) # Seed top 100 records into DB
         for _, row in df.iterrows():

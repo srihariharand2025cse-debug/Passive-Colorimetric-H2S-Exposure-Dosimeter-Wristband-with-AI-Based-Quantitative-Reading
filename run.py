@@ -12,8 +12,8 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 from backend.database import init_db
-from ml.generate_dataset import generate_h2s_dataset
-from ml.train_models import train_and_evaluate
+from ml.generate_dataset import generate_sensor_data
+from ml.train_model import train_models
 from backend.app import app
 
 def main():
@@ -23,18 +23,18 @@ def main():
     print("==================================================================")
     
     # 1. Dataset check
-    dataset_csv = os.path.join(ROOT_DIR, 'dataset', 'h2s_exposure_data.csv')
+    dataset_csv = os.path.join(ROOT_DIR, 'dataset', 'sensor_data.csv')
     if not os.path.exists(dataset_csv):
         print("\n[STEP 1/3] Generating synthetic chemistry-informed H2S dataset...")
-        generate_h2s_dataset()
+        generate_sensor_data()
     else:
-        print("\n[STEP 1/3] Dataset existing at dataset/h2s_exposure_data.csv.")
+        print("\n[STEP 1/3] Dataset existing at dataset/sensor_data.csv.")
         
     # 2. Models check
     reg_model = os.path.join(ROOT_DIR, 'models', 'rf_regressor.joblib')
     if not os.path.exists(reg_model):
         print("\n[STEP 2/3] Training Random Forest AI Regressor & Classifier...")
-        train_and_evaluate()
+        train_models()
     else:
         print("\n[STEP 2/3] AI models existing at models/ folder.")
         
