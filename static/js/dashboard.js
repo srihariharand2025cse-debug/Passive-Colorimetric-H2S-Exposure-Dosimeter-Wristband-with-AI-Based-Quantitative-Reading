@@ -553,6 +553,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------
+    // Smart Wristband Fleet Modal Loader
+    // -------------------------------------------------------------
+    async function fetchFleetDevices() {
+        const tbody = document.getElementById('fleet-table-body');
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Loading fleet devices...</td></tr>';
+        try {
+            const res = await fetch('/api/devices');
+            const data = await res.json();
+            if (data.status === 'success') {
+                renderFleetTable(data.data);
+            }
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-danger">Error loading device fleet.</td></tr>';
+        }
+    }
+
+    function renderFleetTable(devices) {
+        const tbody = document.getElementById('fleet-table-body');
+        tbody.innerHTML = '';
+        if (devices.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No devices registered.</td></tr>';
+            return;
+        }
+
+        devices.forEach(d => {
+            const tr = document.createElement('tr');
+            const batteryColor = d.battery_level > 80 ? 'text-success' : d.battery_level > 40 ? 'text-warning' : 'text-danger';
+            tr.innerHTML = `
+                <td><span class="badge bg-primary">${d.device_id}</span></td>
+                <td class="fw-semibold text-light">${d.device_name}</td>
+                <td><i class="fa-solid fa-user me-1 text-info"></i>${d.assigned_user_name || 'Unassigned'}</td>
+                <td><small class="text-muted">${d.user_role || d.location}</small></td>
+                <td><span class="${batteryColor} fw-bold"><i class="fa-solid fa-battery-three-quarters me-1"></i>${d.battery_level}%</span></td>
+                <td><span class="badge bg-success">${d.status}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.getElementById('btn-open-fleet').addEventListener('click', fetchFleetDevices);
+    document.getElementById('refresh-fleet-btn').addEventListener('click', fetchFleetDevices);
+
+    // -------------------------------------------------------------
     // Tab Event Listeners
     // -------------------------------------------------------------
     document.getElementById('analytics-tab').addEventListener('click', fetchAnalytics);
